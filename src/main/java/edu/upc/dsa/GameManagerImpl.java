@@ -35,7 +35,7 @@ public class GameManagerImpl implements GameManager {
         this.listUsers = listUsers;
     }
 
-    public List<User> usuariosOrdAlpha() {
+    public List<User> usersSortAlpha() {
         List<User> lu=new ArrayList<>(listUsers.values());
         Collections.sort(lu, CMP_ALPHA);
         return lu;
@@ -57,14 +57,14 @@ public class GameManagerImpl implements GameManager {
 
     public void addUser(User u) {
         if (!listUsers.containsKey(u.getName())) {
-            User user = new User(u.getName(), u.getSurname(), u.getObjects());
+            User user = new User(u.getName(), u.getSurname());
             listUsers.put(u.getName(), user);
         }
     }
 
-    public void modifyUser(User u, String newName, String newSurname, List<ObjectClass> newObjects) {
-        if (listUsers.containsKey(u.getName())) {
-            u.changeUser(newName, newSurname,newObjects);
+    public void modifyUser(String name, String newName, String newSurname, List<ObjectClass> newObjects) {
+        if (listUsers.containsKey(name)) {
+            listUsers.get(name).changeUser(newName, newSurname,newObjects);
         }
     }
 
