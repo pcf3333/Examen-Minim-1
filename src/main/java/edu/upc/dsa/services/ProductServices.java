@@ -2,7 +2,7 @@ package edu.upc.dsa.services;
 
 
 import edu.upc.dsa.*;
-import edu.upc.dsa.models.Producte;
+import edu.upc.dsa.models.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -12,89 +12,86 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.lang.reflect.Array;
 import java.util.*;
 
 @Api(value = "/", description = "Endpoint to Track Service")
 @Path("/")
 public class ProductServices {
 
-    private ProductManager pm;
+    private GameManager gm;
 
     public ProductServices() {
-        this.pm = ProductManagerImpl.getInstance();
-        ProductManagerImpl Impl= ProductManagerImpl.getInstance();
-        Producte CocaCola=new Producte("CocaCola",2,0);
-        Producte Bocata=new Producte("Bocata",4,0);
-        Producte Aquarius=new Producte("Aquarius",3,0);
-        Producte Croissant=new Producte("Croissant",1,0);
-        Map<String,Producte> listProductes= Map.of("CocaCola",CocaCola ,"Bocata",Bocata,"Aquarius",Aquarius,"Croissant",Croissant);
-        Impl.setListProductes(listProductes);
+        this.gm = GameManagerImpl.getInstance();
+        GameManagerImpl Impl= GameManagerImpl.getInstance();
+        User pere = new User("Pere","Coll");
+        User juanjo = new User("Juanjo","Medina");
+        Map<String, User> listUsers=Map.of("Juanjo",juanjo,"Pere",pere );
+        Impl.setListUsers(listUsers);
     }
 
     @GET
-    @ApiOperation(value = "Get all Products", notes = "Te da todos los productos")
+    @ApiOperation(value = "Get all Users (sorted)", notes = "Users Sorted Alphabetically")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response = Producte.class, responseContainer="List"),
+            @ApiResponse(code = 201, message = "Successful", response = User.class, responseContainer="List"),
     })
-    @Path("/products")
+    @Path("/users")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProducts() {
+    public Response getUsers() {
 
-        List<Producte> products = new ArrayList<>(ProductManagerImpl.getInstance().getListProductes().values());
+        List<User> users = new ArrayList<>(GameManagerImpl.getInstance().getListUsers().values());
 
-        GenericEntity<List<Producte>> entity = new GenericEntity<>(products){};
+        GenericEntity<List<User>> entity = new GenericEntity<>(users){};
         return Response.status(201).entity(entity).build()  ;
     }
 
-    @POST
-    @ApiOperation(value = "create a new pedido", notes = "holi")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response=Pedido.class),
-            @ApiResponse(code = 500, message = "Validation Error")
-
-    })
-
-    @Path("/comandas")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response newComanda(Pedido p) {
-        if (p.getNombre()==null || p.getLiniaPedido()==null)  return Response.status(500).entity(p).build();
-        this.pm.AnotarComanda(p);
-        for (int i=0;i<p.getLiniaPedido().size();i++) {
-            if (ProductManagerImpl.getInstance().getListProductes().get(p.getLiniaPedido().get(i).getProducte()) == null)
-                return Response.status(500).entity(p).build();
-            else
-                pm.getListProductes().get(p.getLiniaPedido().get(i).getProducte()).incrCantidad(p.getLiniaPedido().get(i).getCantidad());
-
-        }
-        return Response.status(201).entity(p).build();
-    }
-
-
-    @GET
-    @ApiOperation(value = "Ver Comanadas", notes = "Vas a ver las comandasssssss")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response = Pedido.class, responseContainer="List"),
-    })
-    @Path("/comandas")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response manager() {
-        GenericEntity<Queue<Pedido>> entity = new GenericEntity<>(pm.getComandas()){};
-        return Response.status(201).entity(entity).build()  ;
-
-    }
-
-    @DELETE
-    @ApiOperation(value = "Servir Comanda", notes = "Sirve la ultima comanda")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful"),
-            @ApiResponse(code = 404, message = "No comandas left")
-    })
-    @Path("/servir")
-    public Response SC() {
-        this.pm.servirComanda();
-        return Response.status(201).build();
-    }
+//    @POST
+//    @ApiOperation(value = "create a new pedido", notes = "holi")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 201, message = "Successful", response=Pedido.class),
+//            @ApiResponse(code = 500, message = "Validation Error")
+//
+//    })
+//
+//    @Path("/comandas")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response newComanda(Pedido p) {
+//        if (p.getNombre()==null || p.getLiniaPedido()==null)  return Response.status(500).entity(p).build();
+//        this.pm.AnotarComanda(p);
+//        for (int i=0;i<p.getLiniaPedido().size();i++) {
+//            if (GameManagerImpl.getInstance().getListProductes().get(p.getLiniaPedido().get(i).getProducte()) == null)
+//                return Response.status(500).entity(p).build();
+//            else
+//                pm.getListProductes().get(p.getLiniaPedido().get(i).getProducte()).incrCantidad(p.getLiniaPedido().get(i).getCantidad());
+//
+//        }
+//        return Response.status(201).entity(p).build();
+//    }
+//
+//
+//    @GET
+//    @ApiOperation(value = "Ver Comanadas", notes = "Vas a ver las comandasssssss")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 201, message = "Successful", response = Pedido.class, responseContainer="List"),
+//    })
+//    @Path("/comandas")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response manager() {
+//        GenericEntity<Queue<Pedido>> entity = new GenericEntity<>(pm.getComandas()){};
+//        return Response.status(201).entity(entity).build()  ;
+//
+//    }
+//
+//    @DELETE
+//    @ApiOperation(value = "Servir Comanda", notes = "Sirve la ultima comanda")
+//    @ApiResponses(value = {
+//            @ApiResponse(code = 201, message = "Successful"),
+//            @ApiResponse(code = 404, message = "No comandas left")
+//    })
+//    @Path("/servir")
+//    public Response SC() {
+//        this.pm.servirComanda();
+//        return Response.status(201).build();
+//    }
 /*
     @GET
     @ApiOperation(value = "get a Track", notes = "asdasd")
