@@ -9,23 +9,14 @@ import static org.junit.Assert.*;
  */
 public class JSONServiceTest {
     @Test
-    public void getProducts() throws Exception {
+    public void getUsers() throws Exception {
 
     }
 
     @Test
-    public void newComanda() throws Exception {
+    public void newUser() throws Exception {
 
     }
 
-    @Test
-    public void manager() throws Exception {
-
-    }
-
-    @Test
-    public void SC() throws Exception {
-
-    }
 
 }

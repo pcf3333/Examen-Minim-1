@@ -10,30 +10,25 @@ import static org.junit.Assert.assertEquals;
 
 public class GameManagerImplTest {
 
-    GameManagerImpl gameManager = null;
-    Map<String, User> listUsers = null;
-    Map<String, ObjectClass> listObjects = null;
-    List<User> userSortedList=null;
-    List<ObjectClass> objectList=null;
+    private GameManagerImpl gameManager = null;
+    private List<User> userSortedList=new LinkedList<>();
 
     //Usuarios
-    User pere = new User("Pere","Coll");
-    User juanjo = new User("Juanjo","Medina");
-    ObjectClass espada=new ObjectClass("Espada",300);
+    private User pere = new User("Pere","Coll");
+    private User juanjo = new User("Juanjo","Medina");
+    private ObjectClass espada=new ObjectClass("Espada",300);
 
     @Before
     public void setUp(){
         gameManager = GameManagerImpl.getInstance();
         ObjectClass espada=new ObjectClass("Espada",100);
-        ObjectClass escudo=new ObjectClass("Escudo",300);
-        ObjectClass cofre=new ObjectClass("Cofre",500);
-        ObjectClass moneda=new ObjectClass("Moneda",10);
 
-        listUsers=Map.of("Juanjo",juanjo,"Pere",pere );
-
+        userSortedList.add(juanjo);
+        userSortedList.add(pere);
 
         //Adding Object to User
         pere.addObject(espada);
+
     }
 
     @After
@@ -46,10 +41,8 @@ public class GameManagerImplTest {
         //Function to add a User
         gameManager.addUser(pere);
         gameManager.addUser(juanjo);
-        assertEquals(listUsers.size(), gameManager.getListUsers().size());
-//        assertEquals(listUsers, gameManager.getListUsers());
-        //NO ENTENC PERQUE NO FUNCIONA... ELS DOS MAPS SON IGUALS PERO LA ID QUE ELS ASSGNA ES DIFFERENT...
-
+        assertEquals(userSortedList.size(), gameManager.usersSortAlpha().size());
+        assertEquals(userSortedList, gameManager.usersSortAlpha());
     }
 
     @Test

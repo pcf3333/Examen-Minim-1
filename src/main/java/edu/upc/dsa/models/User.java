@@ -21,15 +21,6 @@ public class User {
         this.setId(RandomUtils.getId());
     }
 
-    protected Comparator<User> CMP_ALPHA = new Comparator<User>() {
-        public int compare(User u1, User u2) {
-            return u1.getName().compareTo(u2.getName());
-        }
-    };
-
-    // Collections.sort(productos, CMP_PRIZE)
-
-
     public String getId() {
         return id;
     }

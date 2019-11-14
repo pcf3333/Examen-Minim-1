@@ -4,7 +4,6 @@ package edu.upc.dsa.services;
 import edu.upc.dsa.*;
 import edu.upc.dsa.models.ObjectClass;
 import edu.upc.dsa.models.User;
-import edu.upc.dsa.util.ListObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -24,13 +23,13 @@ public class GameServices {
 
     public GameServices() {
         this.gm = GameManagerImpl.getInstance();
-        GameManagerImpl Impl= GameManagerImpl.getInstance();
         User pere = new User("Pere","Coll");
         User juanjo = new User("Juanjo","Medina");
         ObjectClass espada=new ObjectClass("Espada",300);
         pere.addObject(espada);
-        Map<String, User> listUsers=Map.of("Juanjo",juanjo,"Pere",pere );
-        Impl.setListUsers(listUsers);
+
+        gm.addUser(pere);
+        gm.addUser(juanjo);
     }
 
     @GET
@@ -56,12 +55,33 @@ public class GameServices {
 
     })
 
-    @Path("/addUser")
+    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(User u) {
         if (u.getName()==null || u.getSurname()==null)  return Response.status(500).entity(u).build();
-        this.gm.addUser(u);
-        return Response.status(201).entity(u).build();
+        else {
+            gm.addUser(u);
+            return Response.status(201).entity(u).build();
+        }
+    }
+
+    @POST
+    @ApiOperation(value = "Modify User", notes = "Modifies a User (id must be the same)")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successful", response=User.class),
+            @ApiResponse(code = 500, message = "Validation Error")
+
+    })
+
+    @Path("/modifyUser")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modifyUser(User u) {
+        if (u.getName() == null || u.getSurname() == null) return Response.status(500).entity(u).build();
+        if (gm.modifyUser(u)) {
+            return Response.status(201).entity(u).build();
+        }
+        return Response.status(404).build();
+
     }
 
 
@@ -80,45 +100,47 @@ public class GameServices {
     }
 
 
-    //Em falla
     @GET
     @ApiOperation(value = "Get user's Objects", notes = "Gets a user Objects")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful", response = ListObject.class),
+            @ApiResponse(code = 201, message = "Successful", response = ObjectClass.class, responseContainer="List"),
             @ApiResponse(code = 404, message = "Track not found")
     })
     @Path("/{name}/objects")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserObjects(@PathParam("name") String name) {
-        User u = this.gm.getListUsers().get(name);
-        List <ObjectClass> o = u.getObjects();
-        if (u == null || o.size()==0) return Response.status(404).build();
-        else  return Response.status(201).entity(o).build();
+        if (gm.getListUsers().containsKey(name)) {
+            User u = gm.getListUsers().get(name);
+            List<ObjectClass> o = u.getObjects();
+
+            GenericEntity<List<ObjectClass>> entity = new GenericEntity<>(o) {};
+            return Response.status(201).entity(entity).build();
+        }
+        return Response.status(404).build();
+
     }
 
 
-//    Si la poso peta per la response
-//    @POST
-//    @ApiOperation(value = "Modify User", notes = "Modifies a User")
-//    @ApiResponses(value = {
-//            @ApiResponse(code = 201, message = "Successful", response=User.class),
-//            @ApiResponse(code = 500, message = "Validation Error")
-//
-//    })
-//
-//    @Path("/modifyUser")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response modifyUser(String oldName, String newName, String newSurname, List<ObjectClass> o) {
-//        if (gm.getListUsers().containsKey(oldName)) {
-//            if (oldName == null || newName == null || newSurname == null) return Response.status(500).entity(gm.getListUsers().get(oldName)).build();
-//            else {
-//                gm.modifyUser(oldName, newName, newSurname, o);
-//                return Response.status(201).entity(gm.getListUsers().get(newName)).build();
-//            }
-//        }
-//        return Response.status(500).entity("No user found").build();
-//
-//    }
+    @POST
+    @ApiOperation(value = "Add Object to User", notes = "Adds an object to the specified user (id)")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successful", response=ObjectClass.class),
+            @ApiResponse(code = 500, message = "Validation Error")
 
+    })
+
+    @Path("/{name}/add/object")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addObject(@PathParam("name") String name, ObjectClass o) {
+        if (gm.getListUsers().containsKey(name)) {
+            if (o == null) return Response.status(500).entity(o).build();
+            User u = gm.getListUsers().get(name);
+            u.getObjects().add(o);
+
+            GenericEntity<List<ObjectClass>> entity = new GenericEntity<>(u.getObjects()) {};
+            return Response.status(201).entity(entity).build();
+        }
+        return Response.status(404).build();
+    }
 
 }

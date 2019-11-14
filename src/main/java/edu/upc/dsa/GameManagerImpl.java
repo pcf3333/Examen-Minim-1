@@ -13,6 +13,11 @@ public class GameManagerImpl implements GameManager {
         this.listUsers=new HashMap<>();
         this.listObjects=new HashMap<>();
     }
+
+    private void addToUsersList(User u){
+            listUsers.put(u.getName(),u);
+    }
+
     public static GameManagerImpl getInstance(){
         if (Instance==null)
             Instance=new GameManagerImpl();
@@ -55,17 +60,21 @@ public class GameManagerImpl implements GameManager {
         this.listObjects.clear();
     }
 
-    public void addUser(User u) {
+    public User addUser(User u) {
         if (!listUsers.containsKey(u.getName())) {
-            User user = new User(u.getName(), u.getSurname());
-            listUsers.put(u.getName(), user);
+            addToUsersList(u);
         }
+        return u;
     }
 
-    public void modifyUser(String name, String newName, String newSurname, List<ObjectClass> newObjects) {
-        if (listUsers.containsKey(name)) {
-            listUsers.get(name).changeUser(newName, newSurname,newObjects);
+    public boolean modifyUser(User u) {
+        for (Map.Entry<String, User> entry : listUsers.entrySet()) {
+            if (entry.getValue().getId().equals(u.getId())) {
+                entry.getValue().changeUser(u.getName(), u.getSurname(),u.getObjects());
+                return true;
+            }
         }
+        return false;
     }
 
     public int getHowManyUsers() {
@@ -103,9 +112,4 @@ public class GameManagerImpl implements GameManager {
 
 }
 
-/*public static class CompararPrecio implements Comparator<User> {
-    public int compare(User pr1, User pr2) {
-        return Double.compare(pr1.getPrecio(), pr2.getPrecio());
-    }
-}*/
 

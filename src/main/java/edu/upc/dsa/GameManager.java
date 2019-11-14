@@ -8,8 +8,8 @@ import java.util.Map;
 public interface GameManager {
     public Map<String,User> getListUsers();
     public List<User> usersSortAlpha();
-    public void addUser(User u);
-    public void modifyUser(String name, String newName, String newSurname,List<ObjectClass> newObjects);
+    public User addUser(User u);
+    public boolean modifyUser(User u);
     public int getHowManyUsers();
     public User infoUser(String s);
     public void addObject(User u, ObjectClass o);
